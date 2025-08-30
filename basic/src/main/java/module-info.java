@@ -10,6 +10,7 @@ module org.csu.demo.basic {
     requires org.kordamp.bootstrapfx.core;
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
+    requires java.desktop;
 
     opens org.csu.demo.basic to javafx.fxml;
     exports org.csu.demo.basic;
