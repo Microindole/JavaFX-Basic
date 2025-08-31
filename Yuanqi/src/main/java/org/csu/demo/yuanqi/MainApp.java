@@ -17,10 +17,16 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 import org.csu.demo.yuanqi.components.HealthComponent;
+import org.csu.demo.yuanqi.components.NetworkComponent;
 import org.csu.demo.yuanqi.components.PlayerComponent;
+import org.csu.demo.yuanqi.dto.GameStateSnapshot;
+import org.csu.demo.yuanqi.dto.PlayerState;
 import org.csu.demo.yuanqi.entities.YuanqiFactory;
 import org.csu.demo.yuanqi.network.NetworkManager;
 import org.csu.demo.yuanqi.types.EntityType;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class MainApp extends GameApplication {
 
@@ -28,7 +34,7 @@ public class MainApp extends GameApplication {
     private VBox loginUI;
     private TimerAction enemySpawnTimer;
 
-    // ... initSettings(), initGame(), initUI(), showLoginUI() 保持不变 ...
+    private Map<String, Entity> networkPlayers = new ConcurrentHashMap<>();
 
     @Override
     protected void initSettings(GameSettings settings) {
@@ -95,6 +101,7 @@ public class MainApp extends GameApplication {
     private void startGame() {
         player = FXGL.spawn("player", FXGL.getAppWidth() / 2.0, FXGL.getAppHeight() / 2.0);
         player.getComponent(HealthComponent.class).setOnDied(this::resetToLogin);
+        player.getComponent(NetworkComponent.class).setSnapshotConsumer(this::onStateSnapshot);
         FXGL.onKey(KeyCode.A, () -> { if (player.isActive()) player.getComponent(PlayerComponent.class).moveLeft(); });
         FXGL.onKey(KeyCode.D, () -> { if (player.isActive()) player.getComponent(PlayerComponent.class).moveRight(); });
         FXGL.onKey(KeyCode.W, () -> { if (player.isActive()) player.getComponent(PlayerComponent.class).moveUp(); });
@@ -114,7 +121,7 @@ public class MainApp extends GameApplication {
             }
 
             // 2. 清空游戏世界里的所有实体
-            FXGL.getGameWorld().getEntities().forEach(Entity::removeFromWorld);
+            FXGL.getGameWorld().getEntitiesCopy().forEach(Entity::removeFromWorld);
 
             // 3. 清除所有键盘和鼠标的绑定
             FXGL.getInput().clearAll();
@@ -158,5 +165,37 @@ public class MainApp extends GameApplication {
 
     public static void main(String[] args) {
         launch(args);
+    }
+
+    private void onStateSnapshot(GameStateSnapshot snapshot) {
+        if (player == null || !player.isActive()) return;
+
+        // 获取我自己的客户端ID，它是在连接建立时由WebSocket库生成的
+        String myId = player.getComponent(NetworkComponent.class).getClientId();
+
+        // 使用 Platform.runLater 确保所有UI操作都在JavaFX主线程上执行
+        Platform.runLater(() -> {
+            // 移除已经断线的玩家
+            networkPlayers.keySet().removeIf(id -> !snapshot.getPlayers().containsKey(id));
+
+            for (PlayerState state : snapshot.getPlayers().values()) {
+                if (state.getPlayerId().equals(myId)) {
+                    // 这是我自己的状态，忽略（服务器权威模式下也可以用来修正位置）
+                    continue;
+                }
+
+                Entity entity = networkPlayers.get(state.getPlayerId());
+                if (entity == null) {
+                    // 新玩家加入，为他生成一个实体
+                    entity = FXGL.spawn("networkPlayer", state.getX(), state.getY());
+                    networkPlayers.put(state.getPlayerId(), entity);
+                }
+
+                // 【同步】更新其他玩家的位置和旋转
+                // TODO: 在这里加入插值算法，让移动更平滑
+                entity.setPosition(state.getX(), state.getY());
+                entity.setRotation(state.getRotation());
+            }
+        });
     }
 }

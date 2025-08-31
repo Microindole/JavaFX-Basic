@@ -52,4 +52,14 @@ public class YuanqiFactory implements EntityFactory {
                 .collidable()
                 .build();
     }
+
+    @Spawns("networkPlayer")
+    public Entity newNetworkPlayer(SpawnData data) {
+        return FXGL.entityBuilder(data)
+                // 注意：这里我们不设置EntityType，或者设置一个单独的NETWORK_PLAYER类型
+                // 这样它就不会与本地玩家或敌人发生意外的物理碰撞
+                .viewWithBBox(new Rectangle(30, 30, Color.GREEN)) // 用绿色方块代表其他玩家
+                .collidable()
+                .build();
+    }
 }

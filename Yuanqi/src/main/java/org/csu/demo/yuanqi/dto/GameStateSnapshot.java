@@ -9,6 +9,4 @@ import java.util.concurrent.ConcurrentHashMap;
 public class GameStateSnapshot {
     private final long timestamp = System.currentTimeMillis();
     private Map<String, PlayerState> players = new ConcurrentHashMap<>();
-
-    // --- Getters and Setters ---
 }

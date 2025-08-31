@@ -12,6 +12,6 @@ public class UserCommand {
     private double rotation;
 
     public enum CommandType {
-        UPDATE_STATE
+        UPDATE_STATE // 一个统一的状态更新指令
     }
 }

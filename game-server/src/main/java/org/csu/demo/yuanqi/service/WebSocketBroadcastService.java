@@ -1,6 +1,5 @@
 package org.csu.demo.yuanqi.service;
 
-
 import com.google.gson.Gson;
 import org.csu.demo.yuanqi.dto.GameStateSnapshot;
 import org.springframework.stereotype.Service;
@@ -25,16 +24,16 @@ public class WebSocketBroadcastService {
     }
 
     public void broadcast(GameStateSnapshot snapshot) {
+        if (sessions.isEmpty()) return;
         String jsonSnapshot = gson.toJson(snapshot);
         TextMessage message = new TextMessage(jsonSnapshot);
-        
         for (WebSocketSession session : sessions.values()) {
             try {
                 if (session.isOpen()) {
                     session.sendMessage(message);
                 }
             } catch (IOException e) {
-                // Handle error
+                sessions.remove(session.getId());
             }
         }
     }

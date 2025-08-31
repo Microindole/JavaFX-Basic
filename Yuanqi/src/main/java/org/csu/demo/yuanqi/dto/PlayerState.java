@@ -1,10 +1,8 @@
 package org.csu.demo.yuanqi.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
 public class PlayerState {
     private String playerId;
     private double x, y;
@@ -16,4 +14,6 @@ public class PlayerState {
         this.y = y;
         this.rotation = rotation;
     }
+    
+    // --- Getters and Setters ---
 }
