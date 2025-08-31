@@ -2,7 +2,8 @@ spring:
   application:
     name: game-server
   datasource:
-    url: jdbc:mysql://localhost:3306/yuanqi_db?useSSL=false&serverTimezone=UTC
+    # 【核心修改】在URL末尾添加参数
+    url: jdbc:mysql://localhost:3306/yuanqi_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
     username: root
     password: abcABC369258
     driver-class-name: com.mysql.cj.jdbc.Driver
