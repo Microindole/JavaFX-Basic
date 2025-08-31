@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: game-server
+  datasource:
+    url: jdbc:mysql://localhost:3306/yuanqi_db?useSSL=false&serverTimezone=UTC
+    username: root
+    password: abcABC369258
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+# Configure MyBatis-Plus
+mybatis-plus:
+  mapper-locations: classpath:/mapper/*.xml # Location for XML mapper files, if you use them
+  type-aliases-package: org.csu.demo.yuanqi.model.entity # Alias for your entity package

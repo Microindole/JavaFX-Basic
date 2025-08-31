@@ -408,6 +408,45 @@ public class ModalWindowExample extends Application {
 | **模态类型 (Modality)** | 定义阻塞范围，是窗口级别还是应用级别。                       | `modalStage.initModality(Modality.APPLICATION_MODAL);` |
 | **显示与等待**          | 以同步阻塞的方式显示窗口，并等待其关闭以获取结果或继续流程。 | `modalStage.showAndWait();`                            |
 
-Export to Sheets
+
 
 正确地使用模态窗口可以引导用户完成必要的操作流程，是构建健壮桌面应用不可或缺的一部分。
+
+
+
+
+
+
+
+```
+src
+└── main
+    ├── java
+    │   └── org
+    │       └── csu
+    │           └── demo
+    │               └── yuanqi
+    │                   ├── MainApp.java             // 【核心】游戏主入口和设置
+    │                   │
+    │                   ├── components               // 【组件包】存放实体的“能力”
+    │                   │   └── PlayerComponent.java //  -> 玩家移动、攻击等逻辑
+    │                   │
+    │                   ├── entities                 // 【实体包】或称为 Factory
+    │                   │   └── YuanqiFactory.java   //  -> 负责创建玩家、敌人、子弹等
+    │                   │
+    │                   └── types                    // (可选) 存放游戏中的枚举类型
+    │                       └── EntityType.java      //  -> PLAYER, ENEMY, BULLET
+    │
+    └── resources
+        └── assets                     // 【核心】所有游戏资源放这里
+            ├── textures               // 图片、精灵图
+            │   ├── player.png
+            │   └── bullet.png
+            ├── sounds                 // 音效
+            ├── music                  // 背景音乐
+            └── tiled                  // 用Tiled编辑器创建的地图(.tmx文件)
+```
+
+
+
+
